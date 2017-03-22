@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from collections import defaultdict
 import requests
-import urlparse
+import urllib.parse
 import re
 import pickle
 
@@ -11,7 +11,7 @@ def gen_list_of_urls(LETTERS, BASE_URL, SLUG):
     for letter in LETTERS:
         for number in range(0,3):
             #3 was 22
-            url = urlparse.urljoin(BASE_URL, SLUG.format(ltr=letter, pge=number))
+            url = urllib.parse.urljoin(BASE_URL, SLUG.format(ltr=letter, pge=number))
             list_of_urls.append(url)
     return list_of_urls
 
@@ -31,7 +31,7 @@ def get_raw_html(list_of_urls, MOVIE_DICT):
 
 
 def get_soup(raw_html, MOVIE_DICT):
-    soup = BeautifulSoup(raw_html)
+    soup = BeautifulSoup(raw_html, 'lxml')
     for x in soup.find('div', {'id': 'body'}).find_all(href=re.compile('/movies/\?id')):
         try:
             x = str(x).split('="')
@@ -49,7 +49,7 @@ def main():
     MOVIE_DICT = defaultdict(dict)
     list_of_urls = gen_list_of_urls(LETTERS, BASE_URL, SLUG)
     movie_url_list = get_raw_html(list_of_urls, MOVIE_DICT)
-    print movie_url_list
+    print(movie_url_list)
 
 
 if __name__ == '__main__':
